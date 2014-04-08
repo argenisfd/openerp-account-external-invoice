@@ -39,7 +39,7 @@
 	"description" : "Adecuacion para contadores independientes",
 	"demo_xml" : [],
 	"init_xml" : [],
-	"update_xml" : ["account_invoicex_view.xml"],
+	"update_xml" : ["account_external_invoice.xml"],
 	"active" : False,
 	"installable" : True,
 }
