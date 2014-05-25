@@ -35,7 +35,7 @@
 	"author" : "argenisfd",
 	"category" : "Generic Modules/Accounting",
 	"website" : "http://argenisfd.wordpress.com",
-	"depends" : [],
+	"depends" : ['account'],
 	"description" : "Adecuacion para contadores independientes",
 	"demo_xml" : [],
 	"init_xml" : [],

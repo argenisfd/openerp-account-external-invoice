@@ -275,6 +275,8 @@ l2 = {
 	'currency_id':currency_id,
 	'amount_currency':amount_currency and - direction * amount_currency or 0.0,
 	'company_id': invoice.company_id.id,
+
+
 }"""
 	
 
