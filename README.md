@@ -5,8 +5,8 @@ Módulo de openERP 6.1+ para registrar Facturas sin necesidard de Facturar, úti
 que deseen llevar la contabilidad de sus clientes a traves de OpenERP. (Adecuado a la contabilidad Venezolana)
 
 Dependencias:
-[OpenERP 6.1+][http://nightly.openerp.com/6.1/releases/] (unicamente ha sido probado en la versión 6.1) 
-[Aeroo Report][http://www.alistek.com/wiki/index.php/Main_Page]
+[OpenERP 6.1+][1]  (unicamente ha sido probado en la versión 6.1) 
+[Aeroo Report][2] 
 Módulo de Contabilidad de OpenERP
 
 1) Instalación
@@ -21,9 +21,9 @@ y ejecutar el siguiente comando para clonar el repositorio:
 
 ### Instalando en OpenERP
 
-	* Si ya has iniciado OpenERP debes detener el proceso y volverlo a iniciar
-	* Entra como administrador a OpenERP entra en el menú "Configuación > Módulos > Actualizar Lista De Módulos". clic en actualizar y luego aceptar
-	* Entra en "Configuración > Módulos > Modules", desmarca la opción "Aplicaciones en Linea" y escribe "account-external-invoice" en el campo name [Enter], clic en instalar y seguir los pasos del wizard
+* Si ya has iniciado OpenERP debes detener el proceso y volverlo a iniciar
+* Entra como administrador a OpenERP entra en el menú "Configuación > Módulos > Actualizar Lista De Módulos". clic en actualizar y luego aceptar
+* Entra en "Configuración > Módulos > Modules", desmarca la opción "Aplicaciones en Linea" y escribe "account-external-invoice" en el campo name [Enter], clic en instalar y seguir los pasos del wizard
 
 ### Agregando Reportes
 	
@@ -47,4 +47,5 @@ Para usar el nuevo módulo instalado, debes ingresar al Menú "Contabilidad > Re
 
 
 
-  
+[1]: http://nightly.openerp.com/6.1/releases/
+[2]: http://www.alistek.com/wiki/index.php/Main_Page
