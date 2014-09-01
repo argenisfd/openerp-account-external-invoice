@@ -2,6 +2,7 @@ from osv import osv, fields, orm
 import tempfile
 import csv
 import time
+import base64
 
 class account_external_invoice_upload(osv.osv):
 	_name = 'account.external.invoice.upload'
@@ -22,19 +23,13 @@ class account_external_invoice_upload(osv.osv):
 		newObj=self.pool.get('account.external.invoice.upload').browse(cr, uid, newId, context=None)
 		print newId;
 		print tempfile.gettempdir() # prints the current temporary directory
-		#f = tempfile.TemporaryFile(prefix='invoice_upload_', suffix='.scv', dir=tempfile.gettempdir())
-		f= open("/var/www/openerp-6.1/temp_files/tttttttttttemp_openerp.csv","w")
-		print newObj.file
-		f.write(newObj.file)
-		print newObj
-		print f
+		f = tempfile.TemporaryFile(prefix='invoice_upload_', suffix='.scv', dir=tempfile.gettempdir())
+		#f= open("/var/www/openerp-6.1/temp_files/tttttttttttemp_openerp.csv","w+")
+		cont=base64.decodestring(newObj.file)
+		f.write(cont)
 		f.seek(0)
-		reader = csv.reader(f)
+		reader = csv.reader(f,delimiter=';')
 		for row in reader:
 			print row
-		print "INICIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-		
-		time.sleep(60)
 		f.close();
-		print "FINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
 		return newId

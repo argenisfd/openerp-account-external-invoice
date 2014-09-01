@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--<delete model="ir.actions.wizard" search="[('wizard_print_period_report','like','account.')]" />
+        <wizard string="Reconcile Transactions" model="account.move.line" name="account.move.line.reconcile" />
+        <wizard string="Verify Transac steptions" model="account.move.line" name="account.move.line.check" keyword="tree_but_action" />
+        <wizard string="Verify Transactions" model="account.move.line" name="account.move.line.check" />
+        <wizard string="Print Journal" model="account.account" name="account.journal" />
+        <wizard string="Split Invoice" model="account.invoice" name="account.invoice.split" />-->
+        <wizard string="Refund Invoice" model="account.period"  name="wizard_print_period_report" id="menu_external_invoice_wizard" />
+
+        <menuitem
+             name="Descarga de Libro"
+             action="menu_external_invoice_wizard"
+             type="wizard"
+             id="menu_wizard_employee_info"
+             parent="account_external_invoice_main"
+             />
+</data>
+</openerp>

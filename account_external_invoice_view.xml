@@ -17,7 +17,7 @@
 		</field>
 	</record>
 <!-- Listado para el upload -->
-<record model="ir.ui.view" id="view_account_external_invoice_upload_tree">
+	<record model="ir.ui.view" id="view_account_external_invoice_upload_tree">
 		<field name="name">account.external.invoice.upload.tree</field>
 		<field name="model">account.external.invoice.upload</field>
 		<field name="type">tree</field>
@@ -35,19 +35,33 @@
 		<field name="type">form</field>
 		<field name="arch" type="xml">
 			<form string="Registro de Ventas">
-				<field name="company_id" invisible="True"></field>
-				<field name="journal_id"></field>
-				<field name="period_id"></field>
-				<field name="date_invoice"></field>
-				<field name="invoice_number"></field>
-				<field name="control_number"></field>
-				<field name="partner_id" on_change="onchange_partner_id(partner_id,company_id)"></field>
-				<field name="account_id" ></field>
-				<field name="no_tax" on_change="onchange_total_iva(base,tax_amount,no_tax)"></field>
-				<field name="base" on_change="onchange_iva(base,no_tax)"></field>
-				<field name="tax_id" on_change="onchange_iva(base,no_tax)"></field>
-				<field name="tax_amount" on_change="onchange_total_iva(base,tax_amount,no_tax)"></field>
-				<field name="total_amount"></field>
+				<group string="Payment Options" col="4" colspan="4">
+					<field name="company_id" invisible="True"></field>
+				    <field name="journal_id" string="Diario"></field>
+				    <field name="period_id" string="Período"></field>
+				    <field name="partner_id" string="Empresa" on_change="onchange_partner_id(partner_id,company_id)"></field>
+					<field name="account_id" string="Cuenta"></field>
+					<field name="inverse_account_id" string="Cuenta Inversa" ></field>
+					<field name="doc_type" string="Tipo de Documento"></field>
+			    </group>
+			    	<notebook>
+			    	<page string="General">
+						<field name="date_invoice" string="Fecha del Documento"></field>	
+						<field name="invoice_number" string="Número de Documento"></field>
+						<field name="control_number" string="Número de Control" attrs="{'readonly':[('doc_type','=','RIV')]}"></field>		
+						<field name="no_tax" on_change="onchange_total_iva(base,tax_amount,no_tax)" attrs="{'readonly':[('doc_type','=','RIV')]}"></field>
+						<field name="base" string="Base" attrs="{'readonly':[('doc_type','=','RIV')]}" on_change="onchange_iva(base,no_tax)"></field>
+						<field name="tax_id" on_change="onchange_iva(base,no_tax)"></field>
+						<field name="tax_amount" on_change="onchange_total_iva(base,tax_amount,no_tax)" attrs="{'readonly':[('doc_type','=','RIV')]}" ></field>
+						<field name="total_amount"></field>
+						<field string="Retención"  name="retention_amount" attrs="{'invisible':[('doc_type','!=','RIV')], 'required':[('doc_type','=','RIV')]}"></field>
+					</page>
+					<page string="Avanzado" >
+						<field name="import" string="Importación"></field>
+						<field name="reg" string="Registro"></field>
+					</page>
+					</notebook>
+				
 			</form>
 		</field>
 	</record>
@@ -83,6 +97,8 @@
 		<field name="view_mode">tree,form</field>
 		<field name="context">{'type':'out_invoice'}</field>
 		<field name="domain">[('type','=','out_invoice')]</field>
+
+
 	</record>
 	<!-- Definimos el disparador para el formlario de uploads-->
 	<record model="ir.actions.act_window" id="open_account_external_invoice_upload_form">

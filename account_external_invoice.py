@@ -36,6 +36,12 @@ class account_external_invoice(osv.osv):
 	_columns = {
 		'type': fields.selection([('out_invoice','Venta'), ('in_invoice','Compra')], 'Sale / Buy', required=True, readonly=False, select=False, help='Si es de venta o compra'),
         'company_id': fields.many2one('res.company', 'Company', required=True, change_default=False, readonly=False),
+		'doc_type': fields.selection( ( ('F', "FACTURA" ), 
+										('NC', "NOTA DE CREDITO"),
+										('ND',"NOTA DE DEBITO"),
+										('RIV',"RETENCION DE IVA")
+										)
+		                             ,"Tipo Doc"),
 		'invoice_number': fields.char('Nro. Factura', size=20, required=True),
 		'control_number': fields.char('Nro. Control', size=20, required=False),
 		'date_invoice': fields.date('Invoice Date', readonly=False, select=True, help="Fecha de la Factura"),
@@ -43,12 +49,16 @@ class account_external_invoice(osv.osv):
 		'journal_id': fields.many2one('account.journal', 'Journal', required=True, readonly=False ),
 		'partner_id': fields.many2one('res.partner', 'Partner', change_default=True, readonly=False, required=True),
 		'account_id' : fields.many2one('account.account', 'Account', required=True, ondelete="cascade"),
+		'inverse_account_id' : fields.many2one('account.account', 'Inverse Account', required=True, ondelete="cascade"),
 		'no_tax': fields.float('No Gravado', required=True, digits=(14,2), help='Monto sin derecho a credito fiscal'),
 		'base': fields.float('BIG', required=True, digits=(14,4), help='Base Imponible'),
 		'tax_id': fields.many2one('account.tax', 'Tax', help="The tax basis of the tax declaration.", required=True),
 		'tax_amount': fields.float('Total IVA', required=True, digits=(14,2), help='Tax Amount'),
 		'total_amount': fields.function(_cal_total_amount, digits=(14,2), string='Total Amount', store=False),
-		'state': fields.selection([('pending_entry','Pendiente'), ('entry','Asentado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra')
+		'retention_amount': fields.float('Retention Amount', required=True, digits=(14,2), help='Monto de la Retencion'),
+		'state': fields.selection([('pending_entry','Pendiente'), ('entry','Asentado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra'),
+		'import': fields.boolean('Importacion'),
+		'reg': fields.char('Reg', size=8, required=True)
 
 		#'total_amount': fields.float('Total', required=False, readonly=True digits=(14,4),  help='Total del Documento'),
 		#'total_amount': fields.float('Total', required=False, readonly=True digits=(14,4),  help='Total del Documento'),
@@ -60,6 +70,14 @@ class account_external_invoice(osv.osv):
 		'state': 'pending_entry',
 		'journal_id': _get_journal,
         'company_id': lambda self,cr,uid,c: self.pool.get('res.company')._company_default_get(cr, uid, 'account.invoice', context=c),
+        'doc_type': 'F',
+        'import': False,
+        'reg': "01-REG",
+        'tax_amount': 0.00,
+        'retention_amount': 0.00,
+        'base': 0.00,
+        'no_tax': 0.00
+
 		}
 
 	def onchange_iva(self, cr, uid, ids, base,no_tax, context=None):
@@ -118,6 +136,7 @@ class account_external_invoice(osv.osv):
 		ref= context.get('invoice_number')
 		company_id=context.get('company_id')
 		account_id=context.get('account_id')
+		inverse_account_id=context.get('inverse_account_id')
 		journal_id=context.get('journal_id')
 		period_id = context.get('period_id')
 		date_invoice = context.get('date_invoice')
@@ -134,14 +153,13 @@ class account_external_invoice(osv.osv):
 			'credit': direction * total_amount>0 and direction * total_amount,
 			'name': ref,
 			'ref':ref,
-			'account_id': account_id,
+			'account_id': inverse_account_id,
 			'partner_id': partner_id,
 			'date': date_invoice,
 			'currency_id':None,
 			#'amount_currency':total_amount and direction * total_amount or 0.0,
 			'company_id': company_id,
 		}
-		print "hhhhhoooooooooooooooooooooolllllllllllllllllaaaaaaaaaaaaaa"
 		
 		l2 = {
 			'debit': direction * tax_amount>0 and direction * tax_amount,
