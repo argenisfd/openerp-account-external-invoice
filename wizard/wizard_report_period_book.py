@@ -17,7 +17,7 @@ class wizard_report_period_book(osv.osv_memory):
 		#
 		return {
 			'type': 'ir.actions.report.xml',
-			'report_name': 'account.external.invoice.compras.report',
+			'report_name': 'account.external.invoice.purshases.report',
 			'datas': {'ids': [2]}
 		}
 
