@@ -42,7 +42,7 @@
 				    <field name="partner_id" string="Empresa" on_change="onchange_partner_id(partner_id,company_id)"></field>
 					<field name="account_id" string="Cuenta"></field>
 					<field name="inverse_account_id" string="Cuenta Inversa" ></field>
-					<field name="doc_type" string="Tipo de Documento"></field>
+					<field name="doc_type" string="Tipo de Documento" on_change="onchange_doc_type(doc_type)"></field>
 			    </group>
 			    	<notebook>
 			    	<page string="General">

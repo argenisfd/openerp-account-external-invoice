@@ -65,6 +65,7 @@ class account_external_invoice(osv.osv):
 		}
 		
 	_order = "period_id"
+
 	_defaults= {
 		'type':_get_type,
 		'state': 'pending_entry',
@@ -90,15 +91,37 @@ class account_external_invoice(osv.osv):
 	def onchange_total_iva(self, cr, uid, ids, base,tax_amount,no_tax, context=None):
 		return {'value': { 'total_amount': base+tax_amount+no_tax } }
 
+	def onchange_doc_type(self, rc, uid, ids, doc_type, context=None ):
+		values={};
+		if doc_type == 'RIV':
+			values["base"]=0.00
+			values["tax_amount"]=0.00
+			values["total_amount"]=0.00
+			values["no_tax"]=0.00
+			values["control_number"]=""
+		else:
+			values["retention_amount"]=0.00
+
+		return {'value': values}
+		
+
 	def onchange_partner_id(self, cr, uid, ids, partner_id,company_id,context=None):
 		if context is None:
 			context = {}
+		values_ret={}
 		user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
 		company_id = context.get('company_id', user.company_id.id)
 		type = context.get('type', 'out_invoice')
 		acc_id = False
 		if partner_id:
 			p = self.pool.get('res.partner').browse(cr, uid, partner_id)
+			#if len(p.ref) == 9:
+			#	values_ret[""]
+				 
+			#print "----------------------"
+			#print p.ref
+			#print p.ref[0:1].upper()
+			#print "*************************"
 			if company_id:
 				if p.property_account_receivable.company_id.id != company_id and p.property_account_payable.company_id.id != company_id:
 					property_obj = self.pool.get('ir.property')
@@ -124,10 +147,13 @@ class account_external_invoice(osv.osv):
 				acc_id = p.property_account_receivable.id
 			else:
 				acc_id = p.property_account_payable.id
-		result = {'value': {'account_id': acc_id}}
+
+		values_ret['account_id']=acc_id
+		result = { 'value': values_ret }
 		return result
 
 	def create_movement(self, cr, uid, context=None, name=''):
+		return "Return de prueba para que no cree el movimientos mientras"
 		if context is None:
 			context = {}
 
