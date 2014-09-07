@@ -42,7 +42,8 @@
 	"update_xml" : [
 					"account_external_invoice_view.xml", 
 					"wizard/wizard_report_period_book.xml", 
-					"wizard/wizard_print_period_report.xml"
+					"wizard/wizard_print_period_report.xml",
+					"report/reports.xml"
 					],
 	"active" : True,
 	"installable" : True,

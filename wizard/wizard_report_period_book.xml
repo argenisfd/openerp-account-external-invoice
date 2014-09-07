@@ -8,7 +8,9 @@
 			<field name="arch" type="xml">
 				<form string="Nuevo Wizard">
 					<group colspan="4" col="2">
+						<field name="company_id" widget="selection"  />
 						<field name="period_id" />
+						<field name="report_type" />
 					</group>
 					<button name="close" type="object" icon="gtk-no" string="Cancelar" />
 					<button name="print_report" type="object" icon="gtk-ok" string="Imprimir" />

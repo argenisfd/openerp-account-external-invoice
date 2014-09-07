@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="report_account_external_invoice_sales" model="ir.actions.report.xml">
+        <field name="name">Reporte de Ventas</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">account.period</field>
+        <field name="report_name">account.external.invoice.sales.report</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-ods</field>
+        <field name="parser_loc">account-external-invoice/report/parser.py</field>
+        <field name="report_rml">account-external-invoice/report/report_account_external_invoice_sales.ods</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+
+    <record id="report_account_external_invoice_purshase" model="ir.actions.report.xml">
+        <field name="name">Reporte de Compras</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">account.period</field>
+        <field name="report_name">account.external.invoice.purshase.report</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-ods</field>
+        <field name="parser_loc">account-external-invoice/report/parser.py</field>
+        <field name="report_rml">account-external-invoice/report/report_account_external_invoice_purshase.ods</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+
+    <ir_set>
+        <field eval="'action'" name="key"/>
+        <field eval="'client_print_multi'" name="key2"/>
+        <field eval="['account.period']" name="models"/>
+        <field name="name">Reporte de Ventas</field>
+        <field eval="'ir.actions.report.xml,'+str(report_account_external_invoice_sales)" name="value"/>
+        <field eval="True" name="isobject"/>
+        <field eval="True" name="replace"/>
+    </ir_set>
+
+</data>
+</openerp>
