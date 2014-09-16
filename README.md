@@ -19,6 +19,8 @@ y ejecutar el siguiente comando para clonar el repositorio:
 	
 	git clone https://github.com/argenisfd/openerp-account-external-invoice.git account-external-invoice
 
+
+
 ### Instalando en OpenERP
 
 * Si ya has iniciado OpenERP debes detener el proceso y volverlo a iniciar
@@ -46,6 +48,54 @@ Los demás campos los puedes dejar con los valores por defecto
 Para usar el nuevo módulo instalado, debes ingresar al Menú `Contabilidad > Registro de Comprobantes` allí aparecen todas las opciones del módulo  
 
 
+3) Instalando dependencias
+----------------------------
+### Instalar Bazar [Doc][3]
+
+Fundamentalmente es ejecutar el siguiente comando 
+	sudo apt-get install bzr
+
+Para mayor información, consultar la documentación [Manual de instalación bazar][3]
+
+### Instalar aeroo report [Doc][4]
+Situarse en cualquier directorio
+
+	$ bzr branch lp:aeroolib
+	$ cd aeroolib/aeroolib
+	$ sudo python ./setup.py install
+
+Situarse en la carpeta de openerp y crear la parpeta "vendors" 
+ 	$ cd /var/www/openerp-6.1/
+ 	$ mkdir vendors
+
+Ajecututar los siguientes comandos para descargar los módulos de aeroo
+
+	$ cd vendors/
+	$ bzr branch https://launchpad.net/aeroo --esto no se ejecuta
+	$ bzr branch lp:aeroo/openerp6.1.x aeroo
+
+	$ bzr branch https://launchpad.net/aeroolib
+
+Agreagar la nueva vendors a las rutas de addons
+	
+	$ cd /var/www/openerp-6-1/
+	$ nano erp.conf
+
+-
+	#erp.cong
+	...
+	[options]
+	addons_path = /var/www/openerp-6.1/openerp/addons,/var/www/openerp-6.1/vendors/aeroo
+	...
+
+#Instalar dependencias de aeroo
+ 	$ sudo apt-get install python-genshi 
+
+
+
+Entrar en OpenERP e instalar el módulo aeroo desde el gestor de paquetes No olvidar actualizar la lista de paquetes para que aparezca
 
 [1]: http://nightly.openerp.com/6.1/releases/
 [2]: http://www.alistek.com/wiki/index.php/Main_Page
+[3]: https://help.ubuntu.com/10.04/serverguide/bazaar.html
+[4]: http://www.alistek.com/wiki/index.php/Aeroo_Reports_Linux_server

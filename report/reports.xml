@@ -15,15 +15,15 @@
         <field name="tml_source">file</field>
     </record>
 
-    <record id="report_account_external_invoice_purshase" model="ir.actions.report.xml">
+    <record id="report_account_external_invoice_purshases" model="ir.actions.report.xml">
         <field name="name">Reporte de Compras</field>
         <field name="type">ir.actions.report.xml</field>
         <field name="model">account.period</field>
-        <field name="report_name">account.external.invoice.purshase.report</field>
+        <field name="report_name">account.external.invoice.purshases.report</field>
         <field name="report_type">aeroo</field>
         <field name="in_format">oo-ods</field>
         <field name="parser_loc">account-external-invoice/report/parser.py</field>
-        <field name="report_rml">account-external-invoice/report/report_account_external_invoice_purshase.ods</field>
+        <field name="report_rml">account-external-invoice/report/report_account_external_invoice_purshases.ods</field>
         <field name="parser_state">loc</field>
         <field name="tml_source">file</field>
     </record>
