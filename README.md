@@ -89,11 +89,13 @@ Agreagar la nueva vendors a las rutas de addons
 	...
 
 #Instalar dependencias de aeroo
- 	$ sudo apt-get install python-genshi 
+ //	$ sudo apt-get install python-genshi 
+ 	sudo apt-get install openoffice.org python-genshi python-cairo python-openoffice python-lxml python-uno
 
 
+Entrar en OpenERP e instalar el módulo aeroo desde el gestor de paquetes No olvidar actualizar la lista de paquetes para que aparezca. Instalar los siguientes módulos:
+	report_aeroo
 
-Entrar en OpenERP e instalar el módulo aeroo desde el gestor de paquetes No olvidar actualizar la lista de paquetes para que aparezca
 
 [1]: http://nightly.openerp.com/6.1/releases/
 [2]: http://www.alistek.com/wiki/index.php/Main_Page
