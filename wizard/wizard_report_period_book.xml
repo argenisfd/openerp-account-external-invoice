@@ -19,7 +19,7 @@
 		</record>
 
 		<record id="act_wizard_report_period_book" model="ir.actions.act_window">
-			<field name="name">New Wizard Action</field>
+			<field name="name">Descargar</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">wizard.report.period_book</field>
 			<field name="view_type">form</field>
