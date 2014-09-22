@@ -35,16 +35,19 @@
 	"author" : "argenisfd",
 	"category" : "Generic Modules/Accounting",
 	"website" : "http://argenisfd.wordpress.com",
-	"depends" : ["account_accountant", 
+	"depends" : [
+				 "base",
+				 "account_accountant", 
 				 "report_aeroo",
-				 "report_aeroo_ooo"],
+				 "report_aeroo_ooo"
+				 ],
 	"description" : "Adecuacion para contadores independientes",
 	"demo_xml" : [],
 	"init_xml" : [],
 	"update_xml" : [
 					"account_external_invoice_view.xml", 
-					#"wizard/wizard_report_period_book.xml", 
-					"wizard/wizard_print_period_report.xml",
+					"wizard/wizard_report_period_book.xml", 
+					#"wizard/wizard_print_period_report.xml",
 					"report/reports.xml"
 					],
 	"active" : True,
