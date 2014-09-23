@@ -35,7 +35,7 @@
 		<field name="type">form</field>
 		<field name="arch" type="xml">
 			<form string="Registro de Ventas">
-				<group string="Payment Options" col="4" colspan="4">
+				<group string="" col="4" colspan="4">
 					<field name="company_id" invisible="True"></field>
 				    <field name="journal_id" string="Diario"></field>
 				    <field name="period_id" string="Período"></field>
@@ -73,6 +73,11 @@
 		<field name="arch" type="xml">
 			<form string="Upload del Archivo">
 				<field name="period_id"></field>
+				<field name="journal_id"></field>
+				
+				<field name="tax_id"></field>
+				<field name="account_id"></field>
+				<field name="inverse_account_id"></field>
 				<field name="file"></field>
 			</form>
 		</field>
