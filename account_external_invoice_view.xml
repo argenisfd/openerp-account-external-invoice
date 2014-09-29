@@ -13,7 +13,9 @@
 				<field name="base"></field>
 				<field name="total_amount"></field>
 				<field name="state"></field>
+				<button name="create_account_movement" type="object" icon="gtk-ok" string="Registrar" attrs="{'invisible':[('state','!=','pending_entry')]}" />
 			</tree>
+
 		</field>
 	</record>
 <!-- Listado para el upload -->
@@ -40,8 +42,8 @@
 				    <field name="journal_id" string="Diario"></field>
 				    <field name="period_id" string="Período"></field>
 				    <field name="partner_id" string="Empresa" on_change="onchange_partner_id(partner_id,company_id)"></field>
-					<field name="account_id" string="Cuenta"></field>
-					<field name="inverse_account_id" string="Cuenta Inversa" ></field>
+					<field name="account_id" string="Cuenta Debe"></field>
+					<field name="inverse_account_id" string="Cuenta Haber" ></field>
 					<field name="doc_type" string="Tipo de Documento" on_change="onchange_doc_type(doc_type)"></field>
 			    </group>
 			    	<notebook>

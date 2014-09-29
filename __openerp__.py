@@ -46,6 +46,7 @@
 	"init_xml" : [],
 	"update_xml" : [
 					"account_external_invoice_view.xml", 
+					"account_external_invoice_confirm_view.xml",
 					"wizard/wizard_report_period_book.xml", 
 					#"wizard/wizard_print_period_report.xml",
 					"report/reports.xml"

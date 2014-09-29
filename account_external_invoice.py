@@ -86,7 +86,9 @@ class account_external_invoice(osv.osv):
 		total=0.00
 		iva=base*0.12
 		total=base+iva+no_tax
-		return {'value': {'tax_amount': iva, 'total_amount': total } }
+		return {
+				'value': {'tax_amount': iva, 'total_amount': total},
+				'domain': {'tax_id': [("type_tax_use","=","purchase")] } }
 
 	def onchange_total_iva(self, cr, uid, ids, base,tax_amount,no_tax, context=None):
 		return {'value': { 'total_amount': base+tax_amount+no_tax } }
@@ -153,7 +155,7 @@ class account_external_invoice(osv.osv):
 		return result
 
 	def create_movement(self, cr, uid, context=None, name=''):
-		return "Return de prueba para que no cree el movimientos mientras"
+		#return "Return de prueba para que no cree el movimientos mientras"
 		if context is None:
 			context = {}
 
@@ -257,13 +259,186 @@ class account_external_invoice(osv.osv):
 		self.pool.get("account.move").create(cr, uid, move, context=context)
 		print "move is created";
 		return True
+
+
+	def create_account_movement(self, cr, uid, ids, context=None):
+		doc = self.browse(cr, uid, ids, context=context)[0]
+		
+		if context is None:
+			context = {}
+
+		lines =  self.get_movements_lines(doc)
+		ref= doc.invoice_number
+
+		move = {
+				'name': ref,
+				'ref': ref,
+				'company_id': doc.company_id.id,
+				'journal_id': doc.journal_id.id,
+				'period_id':  doc.period_id.id,
+				'narration':  "Factura de prueba",
+				'date': 	  doc.date_invoice,
+				'line_id': 	  lines,
+				'partner_id': doc.partner_id.id,
+				'to_check':   True,
+			}
+		print move;
+		self.pool.get("account.move").create(cr, uid, move, context=context)
+		self.write( cr, uid, ids, {"state": "entry" }, context=context)
+		return True
+
+
+	def get_movements_lines( self, doc ):
+		doc_type_behavior={}
+		if doc.type == 'in_invoice' :
+			doc_type_behavior= {'F': [-1, 'amount','-amount'], 'NC': [1,'-amount','amount'], 'ND': [-1,'amount','-amount'], 'RIV': [1,'-amount','-amount'] }
+			return self.get_dynamic_movements_lines(doc,{'doc_type_behavior': doc_type_behavior }) 
+		if doc.type == 'out_invoice':
+			doc_type_behavior= {'F': [-1, 'amount','-amount'], 'NC': [1,'-amount','amount'], 'ND': [-1,'amount','-amount'], 'RIV': [1,'-amount','-amount'] }
+			return self.get_dynamic_movements_lines(doc, {'doc_type_behavior': doc_type_behavior })
+		return False
+
+	def get_dynamic_movements_lines(self, doc, params):
+		doc_type_behavior= params['doc_type_behavior']
+		direction = doc_type_behavior[doc.doc_type][0]
+		ref= doc.invoice_number
+		lines=[]
+
+		amounts={"amount": self.get_total_without_tax(doc),
+				"-amount": self.get_total_conciliation(doc) }
+
+
+		lmain_amount=amounts[doc_type_behavior[doc.doc_type][1]]
+		lconciliation_ammount=amounts[doc_type_behavior[doc.doc_type][2]]
+		l_main = {
+			'debit': lmain_amount,
+			'credit': False,
+			'name': ref,
+			'ref':ref,
+			'account_id': doc.account_id.id,
+			'partner_id': doc.partner_id.id,
+			'date': doc.date_invoice,
+			'currency_id':None,
+			#'amount_currency':total_amount and direction * total_amount or 0.0,
+			'company_id': doc.company_id.id,
+		}
+		lines.append((0,0,l_main))
+		tax_amount= self.get_total_tax_amount(doc)
+		if tax_amount > 0 :
+			l_tax={
+				'debit': direction * tax_amount<0 and - direction * tax_amount,
+				'credit': direction * tax_amount>0 and  direction * tax_amount,
+				'name': doc.tax_id.name,
+				'ref':ref,
+				'account_id': doc.tax_id.account_paid_id.id,
+				#'account_tax_id': tax_obj.id,
+				'tax_code_id':doc.tax_id.tax_code_id.id,
+				'tax_amount': tax_amount,
+				'partner_id': doc.partner_id.id,
+				'date': doc.date_invoice,
+				'currency_id':None,
+				#'amount_currency':total_amount and direction * total_amount or 0.0,
+				'company_id': doc.company_id.id,
+			}
+			lines.append((0,0,l_tax))
+		# la cuenta que cuadra
+		
+		
+		l_conciliation_account= {
+			'debit': False,
+			'credit': lconciliation_ammount,
+			'name': ref,
+			'ref':ref,
+			'account_id': doc.inverse_account_id.id,
+			'partner_id': doc.partner_id.id,
+			'date': doc.date_invoice,
+			'currency_id':None,
+			#'amount_currency':total_amount and direction * total_amount or 0.0,
+			'company_id': doc.company_id.id,
+		}
+		lines.append((0,0,l_conciliation_account))
+		return lines
+
+	def get_movements_lines_purchases(self, doc):
+		doc_types = {'F': [-1, 'amount','-amount'], 'NC': [1,'-amount','amount'], 'ND': [-1,'amount','-amount'], 'RIV': [1,'-amount','-amount'] }
+		direction = doc_types[doc.doc_type][0]
+		ref= doc.invoice_number
+		lines=[]
+
+		amounts={"amount": self.get_total_without_tax(doc),
+				"-amount": self.get_total_conciliation(doc) }
+
+
+		lmain_amount=amounts[doc_types[doc.doc_type][1]]
+		lconciliation_ammount=amounts[doc_types[doc.doc_type][2]]
+		l_main = {
+			'debit': lmain_amount,
+			'credit': False,
+			'name': ref,
+			'ref':ref,
+			'account_id': doc.account_id.id,
+			'partner_id': doc.partner_id.id,
+			'date': doc.date_invoice,
+			'currency_id':None,
+			#'amount_currency':total_amount and direction * total_amount or 0.0,
+			'company_id': doc.company_id.id,
+		}
+		lines.append((0,0,l_main))
+		tax_amount= self.get_total_tax_amount(doc)
+		if tax_amount > 0 :
+			l_tax={
+				'debit': direction * tax_amount<0 and - direction * tax_amount,
+				'credit': direction * tax_amount>0 and  direction * tax_amount,
+				'name': doc.tax_id.name,
+				'ref':ref,
+				'account_id': doc.tax_id.account_paid_id.id,
+				#'account_tax_id': tax_obj.id,
+				'tax_code_id':doc.tax_id.tax_code_id.id,
+				'tax_amount': tax_amount,
+				'partner_id': doc.partner_id.id,
+				'date': doc.date_invoice,
+				'currency_id':None,
+				#'amount_currency':total_amount and direction * total_amount or 0.0,
+				'company_id': doc.company_id.id,
+			}
+			lines.append((0,0,l_tax))
+		# la cuenta que cuadra
+		
+		
+		l_conciliation_account= {
+			'debit': False,
+			'credit': lconciliation_ammount,
+			'name': ref,
+			'ref':ref,
+			'account_id': doc.inverse_account_id.id,
+			'partner_id': doc.partner_id.id,
+			'date': doc.date_invoice,
+			'currency_id':None,
+			#'amount_currency':total_amount and direction * total_amount or 0.0,
+			'company_id': doc.company_id.id,
+		}
+		lines.append((0,0,l_conciliation_account))
+		return lines
+
+
+
+	def get_total_without_tax(self, doc):
+		return doc.base + doc.no_tax + doc.retention_amount
+
+	def get_total_tax_amount(self, doc):
+		return doc.tax_amount
+
+	def get_total_conciliation(self, doc):
+		return self.get_total_without_tax(doc) + self.get_total_tax_amount(doc)
+
+
 	def create(self, cr, uid, vals, context=None):
 		if context is None:
 			context = {}
 		res = super(account_external_invoice, self).create(cr, uid,vals, context=context)
 		to_move_ctx=context.copy();
 		to_move_ctx.update(vals)
-		self.create_movement(cr, uid, context=to_move_ctx, name='')
+		#self.create_movement(cr, uid, context=to_move_ctx, name='')
 		return res
 		try:
 			print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -325,3 +500,15 @@ l2 = {
 	
 
 account_external_invoice()
+
+
+
+
+"""[(0, 0, {'currency_id': None, 'credit': 100.0,  'debit': False, 'ref': u'OMAL-COMP-NC2', 'company_id': 1, 'account_id': 78}), 
+ (0, 0, { 'tax_amount': 6.0,  'credit': 6.0,    'debit': False, 'ref': u'OMAL-COMP-NC2'}), 
+ (0, 0, {'currency_id': None, 'credit': False,  'debit': 106.0, 'ref': u'OMAL-COMP-NC2', 'company_id': 1, 'account_id': 47})]
+"""
+
+[(0, 0, {'currency_id': None, 'credit': 100.0, 'debit': 0, 'date': '2014-09-09', 'partner_id': 4, 'ref': u'OMAL-COMP-F1', 'company_id': 1, 'account_id': 47}), 
+ (0, 0, {'tax_amount': 6.0,   'credit': False, 'debit': 6.0, 'ref': u'OMAL-COMP-F1'}), 
+ (0, 0, {'currency_id': None, 'credit': 0,     'debit': 106.0, 'date': '2014-09-09', 'partner_id': 4, 'ref': u'OMAL-COMP-F1', 'company_id': 1, 'account_id': 78})]
