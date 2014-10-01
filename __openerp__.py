@@ -49,7 +49,8 @@
 					"account_external_invoice_confirm_view.xml",
 					"wizard/wizard_report_period_book.xml", 
 					#"wizard/wizard_print_period_report.xml",
-					"report/reports.xml"
+					"report/reports.xml",
+					"account_external_invoice_upload.xml"
 					],
 	"active" : True,
 	"installable" : True,

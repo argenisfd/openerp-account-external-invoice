@@ -9,14 +9,15 @@ class account_external_invoice_upload(osv.osv):
 	_description = "Register invoice from File"
 
 	_columns = {
-		'file': fields.binary("Data"),
+		'file': fields.binary("Data",required=True),
+		'type': fields.selection([('out_invoice','Venta'), ('in_invoice','Compra')], 'Sale / Buy', required=True, readonly=False, select=False, help='Si es de venta o compra'),
 		'company_id': fields.many2one('res.company', 'Company', required=True, change_default=False, readonly=False),
 		'period_id': fields.many2one('account.period', 'Period', required=True, readonly=False),
 		'journal_id': fields.many2one('account.journal', 'Journal', required=True, readonly=False ),
 		'tax_id': fields.many2one('account.tax', 'Tax', help="The tax basis of the tax declaration.", required=True),
 		'account_id' : fields.many2one('account.account', 'Account', required=True, ondelete="cascade"),
 		'inverse_account_id' : fields.many2one('account.account', 'Inverse Account', required=True, ondelete="cascade"),
-		'state': fields.selection([('pending','Pendiente'), ('entry','Asentado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra')
+		'state': fields.selection([('pending','Pendiente'), ('proccessed','Procesado'), ('cancelled','Cancelado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra')
 		}
 	_defaults= {
 		'state': 'pending',
@@ -25,18 +26,32 @@ class account_external_invoice_upload(osv.osv):
 	def create (self, cr, uid, vals, context=None):
 		newId = super(account_external_invoice_upload, self).create(cr, uid,vals, context=context)
 		newObj=self.pool.get('account.external.invoice.upload').browse(cr, uid, newId, context=None)
-		print newId;
+		return newId
+
+
+
+	def getompany(self, cr, uid, rif ):
+
+		obj=self.pool.get('res.partner').search(cr, uid, [('ref','=', rif )], 0, 1)
+		print obj
+		return obj
+	def createcompany(self, cr, uid, vals, context=None):
+		partner_id=self.pool.get('res.partner').create(cr, uid, vals, context=context)
+		self.pool.get('res.partner.address').create(cr, uid, {'partner_id': partner_id}, context=context)
+
+
+	def createExternalInvoiceRow(self, cr, uid, vals, context=None):
+		self.pool.get('account.external.invoice').create(cr, uid, vals, context=context)
+	
+
+	def proccess_file(self, cr, uid, ids, context=None):
+		newObj=self.pool.get('account.external.invoice.upload').browse(cr, uid,  ids[0], context=None)
 		print tempfile.gettempdir() # prints the current temporary directory
 		f = tempfile.TemporaryFile(prefix='invoice_upload_', suffix='.scv', dir=tempfile.gettempdir())
 		#f= open("/var/www/openerp-6.1/temp_files/tttttttttttemp_openerp.csv","w+")
 		cont=base64.decodestring(newObj.file)
 		f.write(cont)
 		f.seek(0)
-
-
-		csv_cols={
-
-		}
 
 		cols_mail = ('fecha',  
 			"nro_doc", 
@@ -64,12 +79,16 @@ class account_external_invoice_upload(osv.osv):
 		for row in reader:
 			print row
 			date_separator="/"
+			fecha = row[cols["fecha"]]
+
+			print "---------------++++++++++FECHA++++++--------------"
+			print fecha
 			if fecha.find("/") != -1:
 				date_separator="/"
 			else:
 				if fecha.find("-") != -1:
 					date_separator="-"	
-			fecha = row[cols["fecha"]]
+			
 			fechaArray = fecha.split(date_separator)
 			if len(fechaArray) != 3:
 				continue
@@ -92,45 +111,45 @@ class account_external_invoice_upload(osv.osv):
 					'credit_limit': 0,
 					'name': company_name,
 					'ref': company_rif,
-					'opt_output': False
+					'opt_output': False,
+					'supplier': True,
+					'property_account_receivable': newObj.account_id.id,
+					'property_account_payable': newObj.inverse_account_id.id,
+
 					}, context=context)
 				company=self.getompany(cr, uid, company_rif)
 
 			self.createExternalInvoiceRow(cr, uid,{
-				'type': 'out_invoice',
+				'type': newObj.type,
 				'doc_type':'F',
 				'invoice_number': nro_doc,
 				'control_number': nro_control,
 				'date_invoice': fecha,
-				'period_id': vals['period_id'],
-				'journal_id': vals['journal_id'],
+				'period_id': newObj.period_id.id,
+				'journal_id': newObj.journal_id.id,
 				'partner_id': company[0],
-				'account_id': vals['journal_id'],
-				'inverse_account_id': vals['inverse_account_id'],
+				'account_id': newObj.account_id.id,
+				'inverse_account_id': newObj.inverse_account_id.id,
 				'no_tax': exento,
 				'base': base,
-				'tax_id': vals['tax_id'],
+				'tax_id': newObj.tax_id.id,
 				'tax_amount':tax_amount,
 
 				'retention_amount': 0.00,
 				'state':  'pending_entry',
 				'import': False,
 				'reg': '01-REG',
-				'_file_id': newId 
+				'_file_id': newObj.id 
 				}, context)
 		f.close();
-		return newId
+		self.log(cr, uid, ids[0], "El Archivo se ha ")
+		self.write( cr, uid, newObj.id, {"state": "proccessed"  }, context=context)
 
-	def getompany(self, cr, uid, rif ):
 
-		obj=self.pool.get('res.partner').search(cr, uid, [('ref','=', rif )], 0, 1)
-		print obj
-		return obj
-	def createcompany(self, cr, uid, vals, context=None):
-		self.pool.get('res.partner').create(cr, uid, vals, context=context)
-
-	def createExternalInvoiceRow(self, cr, uid, vals, context=None):
-		print 
-		self.pool.get('account.external.invoice').create(cr, uid, vals, context=context)
+	def revert_external_invoice(self, cr, uid, ids, context=None):
+		doc_ids=self.pool.get("account.external.invoice").search(cr, uid, [('_file_id', '=', ids[0]) ])
+		docsArray=self.pool.get("account.external.invoice").unlink(cr, uid, doc_ids )
+		self.log(cr, uid, ids[0], "Se ha eliminado correctamente")
+		self.write( cr, uid, ids, {"state": "cancelled"  }, context=context)
 	#def getiva(self, cr, uid, amount, type="sales", context=None):
 	#	obj=self.pool.get('res.partner').search(cr, uid, [('amount','=', amount ), 'type'], 0, 1)

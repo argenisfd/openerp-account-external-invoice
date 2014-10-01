@@ -18,18 +18,7 @@
 
 		</field>
 	</record>
-<!-- Listado para el upload -->
-	<record model="ir.ui.view" id="view_account_external_invoice_upload_tree">
-		<field name="name">account.external.invoice.upload.tree</field>
-		<field name="model">account.external.invoice.upload</field>
-		<field name="type">tree</field>
-		<field name="arch" type="xml">
-			<tree string="Upload Files">
-				<field name="state"></field>
-				<field name="period_id"></field>
-			</tree>
-		</field>
-	</record>	
+	
 <!-- Definimos el Formulario para el model -->
 	<record model="ir.ui.view" id="view_account_external_invoice_form">
 		<field name="name">account.external.invoice.form</field>
@@ -67,23 +56,7 @@
 			</form>
 		</field>
 	</record>
-<!-- DEfinimos el formulario para el upload-->
-	<record model="ir.ui.view" id="view_account_external_invoice_upload_form">
-		<field name="name">account.external.invoice.upload.form</field>
-		<field name="model">account.external.invoice.upload</field>
-		<field name="type">form</field>
-		<field name="arch" type="xml">
-			<form string="Upload del Archivo">
-				<field name="period_id"></field>
-				<field name="journal_id"></field>
-				
-				<field name="tax_id"></field>
-				<field name="account_id"></field>
-				<field name="inverse_account_id"></field>
-				<field name="file"></field>
-			</form>
-		</field>
-	</record>
+
 
 
 
@@ -107,18 +80,12 @@
 
 
 	</record>
-	<!-- Definimos el disparador para el formlario de uploads-->
-	<record model="ir.actions.act_window" id="open_account_external_invoice_upload_form">
-		<field name="name">Upload</field>
-		<field name="res_model">account.external.invoice.upload</field>
-		<field name="view_type">form</field>
-		<field name="view_mode">tree,form</field>
-	</record>
+	
 	
 	<!-- Definimos la opcion del menu para vendedores -->
 	<menuitem name="Registro de Comprobantes" parent="account.menu_finance" id="account_external_invoice_main" action="open_account_external_invoice_in_form" />
 	<menuitem name="Compras" parent="account_external_invoice_main" id="account_external_invoice_view_form" action="open_account_external_invoice_in_form" />
 	<menuitem name="Ventas" parent="account_external_invoice_main" id="account_external_invoice_sales_view" action="open_account_external_invoice_out_form" />
-	<menuitem name="Carga Por Lotes" parent="account_external_invoice_main" id="account_external_invoice_upload_view" action="open_account_external_invoice_upload_form" />
+	
 </data>
 </openerp>
