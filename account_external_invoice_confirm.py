@@ -9,6 +9,14 @@ class account_external_invoice_confirm(osv.osv_memory):
     _description = "Confirm the selected invoices"
 
     def create_movement_confirm(self, cr, uid, ids, context=None):
+        external_invoices=self.pool.get("account.external.invoice").browse(cr, uid, context.get("active_ids"))
+        for doc in external_invoices:
+            if doc.state not in ("entry"):
+                self.pool.get("account.external.invoice").create_account_movement(cr, uid, [doc.id] , context=None)
+            else:
+                print "noooo"
+        return {'type': 'ir.actions.act_window_close'}
+
         wf_service = netsvc.LocalService('workflow')
         if context is None:
             context = {}

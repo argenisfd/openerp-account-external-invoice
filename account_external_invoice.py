@@ -58,8 +58,9 @@ class account_external_invoice(osv.osv):
 		'retention_amount': fields.float('Retention Amount', required=True, digits=(14,2), help='Monto de la Retencion'),
 		'state': fields.selection([('pending_entry','Pendiente'), ('entry','Asentado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra'),
 		'import': fields.boolean('Importacion'),
-		'reg': fields.char('Reg', size=8, required=True)
-
+		'reg': fields.char('Reg', size=8, required=True),
+		'_movement_id': fields.integer('Movement', size=14, required=False),
+		'_file_id': fields.integer('From File', size=14, required=False),
 		#'total_amount': fields.float('Total', required=False, readonly=True digits=(14,4),  help='Total del Documento'),
 		#'total_amount': fields.float('Total', required=False, readonly=True digits=(14,4),  help='Total del Documento'),
 		}
@@ -87,8 +88,10 @@ class account_external_invoice(osv.osv):
 		iva=base*0.12
 		total=base+iva+no_tax
 		return {
-				'value': {'tax_amount': iva, 'total_amount': total},
-				'domain': {'tax_id': [("type_tax_use","=","purchase")] } }
+				'value': {'tax_amount': iva, 'total_amount': total}}
+		#return {
+		#		'value': {'tax_amount': iva, 'total_amount': total},
+		#		'domain': {'tax_id': [("type_tax_use","=","purchase")] } }
 
 	def onchange_total_iva(self, cr, uid, ids, base,tax_amount,no_tax, context=None):
 		return {'value': { 'total_amount': base+tax_amount+no_tax } }
@@ -282,19 +285,19 @@ class account_external_invoice(osv.osv):
 				'partner_id': doc.partner_id.id,
 				'to_check':   True,
 			}
-		print move;
-		self.pool.get("account.move").create(cr, uid, move, context=context)
-		self.write( cr, uid, ids, {"state": "entry" }, context=context)
+		
+		movement_id =  self.pool.get("account.move").create(cr, uid, move, context=context)
+		self.write( cr, uid, ids, {"state": "entry", '_movement_id': movement_id  }, context=context)
 		return True
 
 
 	def get_movements_lines( self, doc ):
 		doc_type_behavior={}
 		if doc.type == 'in_invoice' :
-			doc_type_behavior= {'F': [-1, 'amount','-amount'], 'NC': [1,'-amount','amount'], 'ND': [-1,'amount','-amount'], 'RIV': [1,'-amount','-amount'] }
+			doc_type_behavior= {'F': [-1, 'amount','-amount'], 'NC': [1,'-amount','amount'], 'ND': [-1,'amount','-amount'], 'RIV': [1,'-amount','amount'] }
 			return self.get_dynamic_movements_lines(doc,{'doc_type_behavior': doc_type_behavior }) 
 		if doc.type == 'out_invoice':
-			doc_type_behavior= {'F': [-1, 'amount','-amount'], 'NC': [1,'-amount','amount'], 'ND': [-1,'amount','-amount'], 'RIV': [1,'-amount','-amount'] }
+			doc_type_behavior= {'F': [1, '-amount','amount'], 'NC': [-1,'amount','-amount'], 'ND': [1,'-amount','amount'], 'RIV': [-1,'amount','-amount'] }
 			return self.get_dynamic_movements_lines(doc, {'doc_type_behavior': doc_type_behavior })
 		return False
 

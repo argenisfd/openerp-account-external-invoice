@@ -32,36 +32,55 @@ class account_external_invoice_upload(osv.osv):
 		cont=base64.decodestring(newObj.file)
 		f.write(cont)
 		f.seek(0)
-		cols = {'fecha':1,  
-			"nro_doc": 2, 
-			"nro_control": 3,
-			"company_name": 6,
-			"rif": 7,
-			"tipo_trans":8,
-			"exento":10,
-			"base": 11,
-			"tax_amount": 13
+
+
+		csv_cols={
+
 		}
-		reader = csv.reader(f,delimiter=',')
+
+		cols_mail = ('fecha',  
+			"nro_doc", 
+			"nro_control",
+			"cliente",
+			"cliente_rif",
+			"tipo_trans",
+			"exento",
+			"base",
+			"iva_monto"
+		)
+
+		cols={}
+
+		reader = csv.reader(f,delimiter=';')
+		titles= reader.next()
+		i=0
+		for keys in titles:
+			if keys in cols_mail:
+				cols[keys]=i
+			i+=1	 
+
 		readed_obj={}
-		print cols
+
 		for row in reader:
-
-
-
 			print row
+			date_separator="/"
+			if fecha.find("/") != -1:
+				date_separator="/"
+			else:
+				if fecha.find("-") != -1:
+					date_separator="-"	
 			fecha = row[cols["fecha"]]
-			fechaArray = fecha.split("/")
+			fechaArray = fecha.split(date_separator)
 			if len(fechaArray) != 3:
 				continue
 			fecha= fechaArray[2]+"-"+fechaArray[1]+"-"+fechaArray[0]
 			nro_doc= row[cols["nro_doc"]]
 			nro_control= row[cols["nro_control"]]
-			company_rif= row[cols["rif"]]
-			company_name= row[cols["company_name"]]
+			company_rif= row[cols["cliente_rif"]]
+			company_name= row[cols["cliente"]]
 			exento= float(row[cols["exento"]].replace(",","."))
 			base= float(row[cols["base"]].replace(",","."))
-			tax_amount= float(row[cols["tax_amount"]].replace(",","."))
+			tax_amount= float(row[cols["iva_monto"]].replace(",","."))
 
 			company=self.getompany(cr, uid, company_rif)
 			if not company : 
@@ -97,6 +116,7 @@ class account_external_invoice_upload(osv.osv):
 				'state':  'pending_entry',
 				'import': False,
 				'reg': '01-REG',
+				'_file_id': newId 
 				}, context)
 		f.close();
 		return newId
