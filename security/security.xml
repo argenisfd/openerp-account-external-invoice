@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data noupdate="0">
+		<record id="aei_group_admin" model="res.groups">
+			<field name="name">Registro de Comprobantes - administrador</field>
+			<field name="comment">Permiso para el modulo de registro de comprobantes</field>
+		</record>
+		<record id="aei_group_user" model="res.groups">
+			<field name="name">Registro de Comprobantes - usuario</field>
+			<field name="comment">Permiso para el modulo de registro de comprobantes</field>
+		</record>
+		<record id="aei_group_hiden_menues" model="res.groups">
+			<field name="name">Ocultar menues</field>
+			<field name="comment">Grupo creado Para ocultar algunos menu - este grupo no deberia tener usuarios</field>
+		</record>
+	</data>
+</openerp>

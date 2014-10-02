@@ -50,7 +50,8 @@
 					"wizard/wizard_report_period_book.xml", 
 					#"wizard/wizard_print_period_report.xml",
 					"report/reports.xml",
-					"account_external_invoice_upload.xml"
+					"account_external_invoice_upload.xml",
+					"security/security.xml"
 					],
 	"active" : True,
 	"installable" : True,

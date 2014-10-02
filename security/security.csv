@@ -1,0 +1,4 @@
+id;name;model_id:id;group_id:id;perm_read;perm_write;perm_create;perm_unlink
+account_external_invoice_user;aei.user;account.external.invoice;aei_group_user;1;1;1;1
+account_external_invoice_responsable;aei.responsable;account.external.invoice;aei_group_admin;1;1;1;1
+account_external_invoice_useradmin;aei.admin;account.external.invoice;aei_group_admin;1;0;0;0

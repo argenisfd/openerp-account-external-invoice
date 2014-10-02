@@ -86,6 +86,9 @@
 	<menuitem name="Registro de Comprobantes" parent="account.menu_finance" id="account_external_invoice_main" action="open_account_external_invoice_in_form" />
 	<menuitem name="Compras" parent="account_external_invoice_main" id="account_external_invoice_view_form" action="open_account_external_invoice_in_form" />
 	<menuitem name="Ventas" parent="account_external_invoice_main" id="account_external_invoice_sales_view" action="open_account_external_invoice_out_form" />
+
+	<menuitem name="Ventas" id="base.menu_base_partner" groups="aei_group_hiden_menues" sequence="40"/>
+
 	
 </data>
 </openerp>
