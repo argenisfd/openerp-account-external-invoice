@@ -39,7 +39,8 @@
 				 "base",
 				 "account_accountant", 
 				 "report_aeroo",
-				 "report_aeroo_ooo"
+				 "report_aeroo_ooo",
+				 "base_crypt"
 				 ],
 	"description" : "Adecuacion para contadores independientes",
 	"demo_xml" : [],
