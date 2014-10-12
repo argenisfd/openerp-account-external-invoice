@@ -52,7 +52,7 @@
 					#"wizard/wizard_print_period_report.xml",
 					"report/reports.xml",
 					"account_external_invoice_upload.xml",
-					"security/security.xml"
+					#"security/security.xml"
 					],
 	"active" : True,
 	"installable" : True,
