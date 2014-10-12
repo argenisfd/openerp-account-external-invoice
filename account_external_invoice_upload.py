@@ -12,12 +12,13 @@ class account_external_invoice_upload(osv.osv):
 		'file': fields.binary("Data",required=True),
 		'type': fields.selection([('out_invoice','Venta'), ('in_invoice','Compra')], 'Sale / Buy', required=True, readonly=False, select=False, help='Si es de venta o compra'),
 		'company_id': fields.many2one('res.company', 'Company', required=True, change_default=False, readonly=False),
-		'period_id': fields.many2one('account.period', 'Period', required=True, readonly=False),
-		'journal_id': fields.many2one('account.journal', 'Journal', required=True, readonly=False ),
+		'period_id': fields.many2one('account.period', 'Period', required=True, readonly=False, domain="[('company_id','=', company_id)]"),
+		'journal_id': fields.many2one('account.journal', 'Journal', required=True, readonly=False, domain="[('company_id','=', company_id)]" ),
 		'tax_id': fields.many2one('account.tax', 'Tax', help="The tax basis of the tax declaration.", required=True),
-		'account_id' : fields.many2one('account.account', 'Account', required=True, ondelete="cascade"),
-		'inverse_account_id' : fields.many2one('account.account', 'Inverse Account', required=True, ondelete="cascade"),
-		'state': fields.selection([('pending','Pendiente'), ('proccessed','Procesado'), ('cancelled','Cancelado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra')
+		'account_id' : fields.many2one('account.account', 'Account', required=True, ondelete="cascade",domain="[('company_id','=', company_id)]"),
+		'inverse_account_id' : fields.many2one('account.account', 'Inverse Account', required=True, ondelete="cascade", domain="[('company_id','=', company_id)]"),
+		'state': fields.selection([('pending','Pendiente'), ('proccessed','Procesado'), ('cancelled','Cancelado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra'),
+		'csv_separator': fields.selection([(',','comma (,)'), (';','punto y coma (;)')], 'CSV Seprator', required=True, readonly=False,help='Separador del Archivo CSV')
 		}
 	_defaults= {
 		'state': 'pending',
@@ -53,7 +54,7 @@ class account_external_invoice_upload(osv.osv):
 		f.write(cont)
 		f.seek(0)
 
-		cols_mail = ('fecha',  
+		cols_mail = ('fecha_doc',  
 			"nro_doc", 
 			"nro_control",
 			"cliente",
@@ -66,8 +67,12 @@ class account_external_invoice_upload(osv.osv):
 
 		cols={}
 
-		reader = csv.reader(f,delimiter=';')
+		print "separator-----------------------"
+		print newObj.csv_separator
+		reader = csv.reader(f,delimiter=str(newObj.csv_separator))
 		titles= reader.next()
+		print "headers:"
+		print titles
 		i=0
 		for keys in titles:
 			if keys in cols_mail:
@@ -79,7 +84,7 @@ class account_external_invoice_upload(osv.osv):
 		for row in reader:
 			print row
 			date_separator="/"
-			fecha = row[cols["fecha"]]
+			fecha = row[cols["fecha_doc"]]
 
 			print "---------------++++++++++FECHA++++++--------------"
 			print fecha
@@ -97,9 +102,9 @@ class account_external_invoice_upload(osv.osv):
 			nro_control= row[cols["nro_control"]]
 			company_rif= row[cols["cliente_rif"]]
 			company_name= row[cols["cliente"]]
-			exento= float(row[cols["exento"]].replace(",","."))
-			base= float(row[cols["base"]].replace(",","."))
-			tax_amount= float(row[cols["iva_monto"]].replace(",","."))
+			exento= self.convertir_float(row[cols["exento"]])
+			base= self.convertir_float(row[cols["base"]])
+			tax_amount= self.convertir_float(row[cols["iva_monto"]])
 
 			company=self.getompany(cr, uid, company_rif)
 			if not company : 
@@ -151,5 +156,21 @@ class account_external_invoice_upload(osv.osv):
 		docsArray=self.pool.get("account.external.invoice").unlink(cr, uid, doc_ids )
 		self.log(cr, uid, ids[0], "Se ha eliminado correctamente")
 		self.write( cr, uid, ids, {"state": "cancelled"  }, context=context)
+
+	def convertir_float(self, param):
+		if(param==""):
+			return 0.0
+		ret="";
+		arr=param.split(".")
+		if len(arr)>=2:
+			if len(arr[1]) >= 3:
+				for n in arr:
+					ret= ret+n
+			else :
+				ret=arr[0]+","+arr[1]
+		else:
+			ret = param
+		ret=ret.replace(",",".")
+		return float(ret)
 	#def getiva(self, cr, uid, amount, type="sales", context=None):
 	#	obj=self.pool.get('res.partner').search(cr, uid, [('amount','=', amount ), 'type'], 0, 1)

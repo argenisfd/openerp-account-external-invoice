@@ -8,16 +8,16 @@ class custom_users(osv.osv):
 	_name = "res.users"
 
 	def create(self, cr, uid, vals, context=None):
-		if self.isSecurePassword(vals["new_password"]):
+		if "new_password" in  vals and self.isSecurePassword(vals["new_password"]):
 			print "El password es seguro"
-		else:
+		elif "new_password" in  vals :
 			raise except_orm(_('ValidateError'), _('El password debe contener por lo menos un caracter especial, una letra y un numero. debe tener una longitud minima de 6 caracteres '))
 		return super(custom_users, self).create(cr, uid,vals, context=context)
 
 	def write(self, cr, uid, ids, vals, context=None):
-		if self.isSecurePassword(vals["new_password"]):
+		if "new_password" in  vals and self.isSecurePassword(vals["new_password"]):
 			print "El password es seguro"
-		else:
+		elif "new_password" in  vals:
 			raise except_orm(_('ValidateError'), _('El password debe contener por lo menos un caracter especial, una letra y un numero. debe tener una longitud minima de 6 caracteres '))
 		return super(custom_users, self).write( cr, uid, ids, vals, context=context)
 

@@ -27,6 +27,7 @@
 			<field name="type">form</field>
 			<field name="arch" type="xml">
 				<form string="Upload del Archivo">
+					<field name="company_id" invisible="True"></field>
 					<field name="type"></field>
 					<field name="period_id" string="Periodo"></field>
 					<field name="journal_id" string="Libro"></field>
@@ -34,6 +35,7 @@
 					<field name="account_id" string="Cuenta Debe" ></field>
 					<field name="inverse_account_id" string="Cuenta Haber"></field>
 					<field name="file"></field>
+					<field name="csv_separator"></field>
 				</form>
 			</field>
 		</record>
