@@ -13,8 +13,8 @@ class account_external_invoice_upload(osv.osv):
 		'type': fields.selection([('out_invoice','Venta'), ('in_invoice','Compra')], 'Sale / Buy', required=True, readonly=False, select=False, help='Si es de venta o compra'),
 		'company_id': fields.many2one('res.company', 'Company', required=True, change_default=False, readonly=False),
 		'period_id': fields.many2one('account.period', 'Period', required=True, readonly=False, domain="[('company_id','=', company_id)]"),
-		'journal_id': fields.many2one('account.journal', 'Journal', required=True, readonly=False, domain="[('company_id','=', company_id)]" ),
-		'tax_id': fields.many2one('account.tax', 'Tax', help="The tax basis of the tax declaration.", required=True),
+		'journal_id': fields.many2one('account.journal', 'Journal', required=True, readonly=False, domain="[('company_id','=', company_id), ('type','in',['sale', 'purchase'])]" ),
+		'tax_id': fields.many2one('account.tax', 'Tax', help="The tax basis of the tax declaration.", required=True, domain="[('company_id','=', company_id)]"),
 		'account_id' : fields.many2one('account.account', 'Account', required=True, ondelete="cascade",domain="[('company_id','=', company_id)]"),
 		'inverse_account_id' : fields.many2one('account.account', 'Inverse Account', required=True, ondelete="cascade", domain="[('company_id','=', company_id)]"),
 		'state': fields.selection([('pending','Pendiente'), ('proccessed','Procesado'), ('cancelled','Cancelado')], 'State', required=True, readonly=True,help='Estatus en el que se ecuentra'),
@@ -75,17 +75,18 @@ class account_external_invoice_upload(osv.osv):
 		print titles
 		i=0
 		for keys in titles:
+			keys= keys.strip(" ")
 			if keys in cols_mail:
 				cols[keys]=i
 			i+=1	 
-
+		print cols
 		readed_obj={}
 
 		for row in reader:
 			print row
 			date_separator="/"
 			fecha = row[cols["fecha_doc"]]
-
+			fecha= fecha.replace(" ","")
 			print "---------------++++++++++FECHA++++++--------------"
 			print fecha
 			if fecha.find("/") != -1:
@@ -98,13 +99,18 @@ class account_external_invoice_upload(osv.osv):
 			if len(fechaArray) != 3:
 				continue
 			fecha= fechaArray[2]+"-"+fechaArray[1]+"-"+fechaArray[0]
-			nro_doc= row[cols["nro_doc"]]
-			nro_control= row[cols["nro_control"]]
-			company_rif= row[cols["cliente_rif"]]
-			company_name= row[cols["cliente"]]
-			exento= self.convertir_float(row[cols["exento"]])
-			base= self.convertir_float(row[cols["base"]])
-			tax_amount= self.convertir_float(row[cols["iva_monto"]])
+			nro_doc= row[cols["nro_doc"]].replace(" ", "")
+			nro_control= row[cols["nro_control"]].replace(" ", "")
+			company_rif= row[cols["cliente_rif"]].replace(" ", "").replace("-","")
+			company_name= row[cols["cliente"]].replace(" ", "")
+			exento= self.convertir_float(row[cols["exento"]].replace(" ", ""))
+			base= self.convertir_float(row[cols["base"]].replace(" ", ""))
+			tax_amount= self.convertir_float(row[cols["iva_monto"]].replace(" ", ""))
+			
+			#ponemos el valor absoluto de los montos
+			exento=abs(exento)
+			tax_amount= abs(tax_amount)
+			base= abs(base)
 
 			company=self.getompany(cr, uid, company_rif)
 			if not company : 

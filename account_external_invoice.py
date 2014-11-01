@@ -1,6 +1,7 @@
 from osv import osv, fields, orm
 import time
 from tools.translate import _
+from lxml import etree
 class account_external_invoice(osv.osv):
 	_name = 'account.external.invoice'
 	_description = "Register Invoice"
@@ -285,7 +286,7 @@ class account_external_invoice(osv.osv):
 				'partner_id': doc.partner_id.id,
 				'to_check':   True,
 			}
-		
+		print move
 		movement_id =  self.pool.get("account.move").create(cr, uid, move, context=context)
 		self.write( cr, uid, ids, {"state": "entry", '_movement_id': movement_id  }, context=context)
 		return True
@@ -433,7 +434,54 @@ class account_external_invoice(osv.osv):
 
 	def get_total_conciliation(self, doc):
 		return self.get_total_without_tax(doc) + self.get_total_tax_amount(doc)
+	
+	def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+		if context is None:
+			context = {}
 
+		res = super(account_external_invoice,self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+		if view_type=="tree":
+			print "-----vieid----------------------------"
+			print view_id
+			print view_type
+			print context
+			print res
+			defaultCompany=self.pool.get('res.company')._company_default_get(cr, uid, 'account.invoice', context=context)
+			print "COMPANY IDDDDDDDDD    FIELSSSSSS";
+			print res["fields"]
+
+			fields= res["fields"]
+			res["fields"]["company_id"]["domain"]=[("id","=",str(defaultCompany))]
+			#print fields['company_id']
+			doc = etree.XML(res['arch'])
+			for node in doc.xpath("//field[@name='company_id']"):
+				node.set('domain', "[('company_id', '=', "+str(defaultCompany)+")]")
+			res['arch'] = etree.tostring(doc)
+
+			for k in res.iterkeys():
+				print k
+				print res[k];
+
+		return res
+
+	def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
+		""" Metodo sobrescrito para hacer el hack de poder filtrar por el company por defecto.
+			en el ir.action.window se colocal el domain [('company_id','=','default_company')]
+			y aqui el valor default_company es reemplazado por el valor real 
+		 """
+		new_arg=[];
+		for (k,cond,val) in args:
+			if k=="company_id" and val =="default_company":
+				val =self.pool.get('res.company')._company_default_get(cr, uid, 'account.invoice', context=context)
+			new_arg.append((k,cond,val))
+		args=new_arg
+		return  super(account_external_invoice, self).search(cr, uid, args, offset, limit, order, context, count) 
+		
+		
+
+
+	def default_company(self,cr,uid,c):
+		return lambda self,cr,uid,c: self.pool.get('res.company')._company_default_get(cr, uid, 'account.invoice', context=c)
 
 	def create(self, cr, uid, vals, context=None):
 		if context is None:
@@ -500,7 +548,6 @@ l2 = {
 
 
 }"""
-	
 
 account_external_invoice()
 

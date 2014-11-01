@@ -8,6 +8,7 @@
 			<field name="type">tree</field>
 			<field name="arch" type="xml">
 				<tree string="Upload Files">
+					<field name="company_id"></field>
 					<field name="type"></field>
 					<field name="state"></field>
 					<field name="journal_id" string="Libro"></field>
