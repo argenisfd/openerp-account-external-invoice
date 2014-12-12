@@ -16,14 +16,14 @@ Menú
 
 El menú del módulo se encuentra en `Contabilidad > Registro de Comprobantes`, allí se mostrarán las opciones de.
 
-* Compras (#compras)
-* Ventas 
-* Carga por Lote
-* Descargar
+* [Compras][compras] 
+* [Ventas][ventas] 
+* [Carga por Lote][carga-por-lotes]
+* [Descargar][descargar]
 
 ![Menú del Módulo](./docs-assets/menu.png)
 
-Compras {#compras}
+Compras
 --------
 
 
@@ -31,7 +31,6 @@ El módulo de compras permite generar comprobantes de compras para registrarlos 
 
 
 ### Listado de Comprobantes de Compras
-{#compras-listado}
 
 En esta sección se muestra un listado de los comprobantes de compra registrados en el sistema. En la siguiente imagen se puede apreciar un ejemplo de cómo se ve esta sección.
 
@@ -71,7 +70,7 @@ Este modódulo permite registrar y gestionar los comprobantes de ventas registra
 
 ### Listado de Comprobantes de Ventas
 
-Esta listado posee las mismas cualidades del [**Listado de Comprobantes de Compras**](#compras-listado)
+Esta listado posee las mismas cualidades del [**Listado de Comprobantes de Compras**][compras-listado]
 
 ### Registro de Comprobantes de Vantas
 
@@ -120,4 +119,9 @@ Pantalla de descarga del Libro de compra o venta
 
 
 [1]: http://https://doc.odoo.com/6.1/es/  
-[formulario]: #campos-de-los-formularios-aplican-para-compra-y-ventas-formulario
+[formulario]: #campos-de-los-formularios-aplican-para-compra-y-ventas
+[compras]: #compras
+[ventas]: #ventas
+[compras-listado]: #listado-de-comprobantes-de-compras
+[carga-por-lotes]: #carga-por-lotes
+[descargar]: #descargar
