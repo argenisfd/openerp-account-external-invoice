@@ -23,9 +23,9 @@ El menú del módulo se encuentra en `Contabilidad > Registro de Comprobantes`, 
 
 ![Menú del Módulo](./docs-assets/menu.png)
 
-Compras
+Compras {#compras}
 --------
-{#compras}
+
 
 El módulo de compras permite generar comprobantes de compras para registrarlos en la contabilidad de las empresas.
 
@@ -42,8 +42,8 @@ Listado de comprobantes de compras
 
 El formulario de resgitro compras está compuesto por los siguientes campos que acontinuación se explican:
 
-#### Campos de los Formularios (Aplican para compra y ventas)
-{#formulario}
+#### Campos de los Formularios (Aplican para compra y ventas) {#formulario}
+
 
 * **Diario:** Representa el diario contable  en el cual se va a cargar el comprobante.
 * **Período:** El período contable en el cual se va a cargar el nuevo comprobante.
