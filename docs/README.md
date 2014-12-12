@@ -6,7 +6,7 @@ Preámbulo
 
 El siguiente Manual de usuario está enfocado a detallar únicamente las características del módulo generado para la carga de comprobantes para OpenERP efocado para la localización venezolana.
 
-Esta documentación se encuentra en linea en <https://github.com/argenisfd/openerp-account-external-invoice/docs/index.md>
+Esta documentación se encuentra en linea en <https://github.com/argenisfd/openerp-account-external-invoice/tree/master/docs>
 
 Para saber más acerca del uso de OpenERP por favor referirse a la [Documentación Oficial de OpenERP][1] (https://doc.odoo.com/6.1/es/). 
 
