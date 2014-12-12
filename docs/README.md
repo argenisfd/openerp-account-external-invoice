@@ -42,7 +42,7 @@ Listado de comprobantes de compras
 
 El formulario de resgitro compras está compuesto por los siguientes campos que acontinuación se explican:
 
-#### Campos de los Formularios (Aplican para compra y ventas) {#formulario}
+#### Campos de los Formularios (Aplican para compra y ventas) 
 
 
 * **Diario:** Representa el diario contable  en el cual se va a cargar el comprobante.
@@ -75,7 +75,7 @@ Esta listado posee las mismas cualidades del [**Listado de Comprobantes de Compr
 
 ### Registro de Comprobantes de Vantas
 
-En esta sección se permite registrar los comprobantes de ventas a los clientes de la empresa, los campos del formulario a llenar se explican en [**Campos de los Formularios (Aplican para compra y ventas)**](#formulario)
+En esta sección se permite registrar los comprobantes de ventas a los clientes de la empresa, los campos del formulario a llenar se explican en [**Campos de los Formularios (Aplican para compra y ventas)**][formulario]
 
 
 Carga por Lotes
@@ -120,3 +120,4 @@ Pantalla de descarga del Libro de compra o venta
 
 
 [1]: http://https://doc.odoo.com/6.1/es/  
+[formulario]: #campos-de-los-formularios-aplican-para-compra-y-ventas-formulario
